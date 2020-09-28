@@ -2,5 +2,5 @@
 /builds/
 /.idea/
 /action_list.ini
-resource.syso
-GoFileWatcher.exe
+/resource.syso
+/GoFileWatcher*.exe
