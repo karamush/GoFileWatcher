@@ -146,7 +146,7 @@ move    - объект перемещён
 | {{ .oldpath }} | Старый путь (при событии Move) | 
 | {{ .operation }} | Имя операции-события (смотри [список](#События-изменений-наблюдаемых-объектов))|
 | {{ .event }} | полное событие, включающее тип объекта (файл или директория), имя, операцию и полный путь |
-| {{ .file }} | см. go тип [FileInfo(https://godoc.org/github.com/gogf/gf/internal/fileinfo)] |
+| {{ .file }} | см. go тип [FileInfo](https://godoc.org/github.com/gogf/gf/internal/fileinfo) |
 
 # Примеры использования
 
