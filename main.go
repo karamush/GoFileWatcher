@@ -39,10 +39,9 @@ func checkAndRunActionsByEvent(event *watcher.Event) {
 	}
 	// поиск по регулярке. сначала полный путь, затем чисто имя файла подставляется
 	// для регулярки нужно использовать префикс ~
-	var secName string
 	if cmd == "" {
 		for _, section := range actionsList.Sections() {
-			secName = strings.TrimSpace(section.Name())
+			secName := strings.TrimSpace(section.Name())
 
 			if strings.HasPrefix(secName, "~") && (checkRegexpMatch(secName[1:], event.Name()) || checkRegexpMatch(secName[1:], event.Path)) {
 				cmd = actionsList.Section(secName).Key(operation).Value()
@@ -63,10 +62,10 @@ func checkAndRunActionsByEvent(event *watcher.Event) {
 	vars["event"] = event
 	vars["file"] = event.FileInfo
 	vars["filename"] = event.Name()
+	vars["name"] = event.Name() // более универсально, для папок тоже чтоб было, а то filename не всегда подходит
 	vars["path"] = event.Path
 	vars["oldpath"] = event.OldPath
 	vars["operation"] = fmt.Sprintf("%s", event.Op)
-	vars["section"] = secName
 
 	var result bytes.Buffer
 	if err := tpl.Execute(&result, vars); err != nil {
