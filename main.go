@@ -140,13 +140,6 @@ func checkAndRunActionsByEvent(event *watcher.Event) {
 	if len(splits) > 1 {
 		cmdArgs = splits[1:]
 	}
-	// если есть пробел в параметре, то обернуть этот параметр обратно в кавычки
-	for i, arg := range cmdArgs {
-		cmdArgs[i] = strings.TrimSpace(arg)
-		if strings.Contains(arg, " ") {
-			cmdArgs[i] = fmt.Sprintf("\"%s\"", arg)
-		}
-	}
 
 	fmt.Printf("Trying to exec: %s...\n", cmd)
 	c := exec.Command(cmdName, cmdArgs...)
