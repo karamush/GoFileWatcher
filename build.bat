@@ -1,6 +1,6 @@
 @echo off
 
-set current_version=1.0.1
+set current_version=1.1
 set base_dir=builds
 set tpl="GoFileWatcher_{{.OS}}_{{.Arch}}"
 set flags=-ldflags "-s -w"
