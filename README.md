@@ -6,7 +6,7 @@
 
 * Вручную скачать [последний релиз](https://github.com/karamush/GoFileWatcher/releases/latest) под нужную архитектуру и ОС.
 * Автоматически из репозитория:
-(для этого нужна корректно установленный Go)
+(для этого нужен корректно установленный Go)
 ```
 go get github.com/karamush/GoFileWatcher
 go install github.com/karamush/GoFileWatcher
