@@ -3,6 +3,7 @@ package main
 
 import (
 	"bytes"
+	"errors"
 	"flag"
 	"fmt"
 	"github.com/radovskyb/watcher"
@@ -27,6 +28,59 @@ func checkRegexpMatch(pattern, str string) bool {
 	pattern = fmt.Sprintf("^%s$", pattern)
 	matched, _ := regexp.Match(pattern, []byte(str))
 	return matched
+}
+
+func parseQuotedStr(command string) ([]string, error) {
+	var args []string
+	state := "start"
+	current := ""
+	quote := "\""
+	for i := 0; i < len(command); i++ {
+		c := command[i]
+
+		if state == "quotes" {
+			if string(c) != quote {
+				current += string(c)
+			} else {
+				args = append(args, current)
+				current = ""
+				state = "start"
+			}
+			continue
+		}
+
+		if c == '"' || c == '\'' {
+			state = "quotes"
+			quote = string(c)
+			continue
+		}
+
+		if state == "arg" {
+			if c == ' ' || c == '\t' {
+				args = append(args, current)
+				current = ""
+				state = "start"
+			} else {
+				current += string(c)
+			}
+			continue
+		}
+
+		if c != ' ' && c != '\t' {
+			state = "arg"
+			current += string(c)
+		}
+	}
+
+	if state == "quotes" {
+		return []string{}, errors.New(fmt.Sprintf("Нет закрывающей кавычки в командной строке: %s", command))
+	}
+
+	if current != "" {
+		args = append(args, current)
+	}
+
+	return args, nil
 }
 
 func checkAndRunActionsByEvent(event *watcher.Event) {
@@ -76,10 +130,22 @@ func checkAndRunActionsByEvent(event *watcher.Event) {
 	// exec cmd!
 	var cmdName string
 	var cmdArgs []string
-	splits := strings.FieldsFunc(cmd, unicode.IsSpace)
+	splits, err := parseQuotedStr(cmd)
+	if err != nil {
+		fmt.Printf("%s\n", err.Error())
+		return
+	}
+
 	cmdName = splits[0]
 	if len(splits) > 1 {
 		cmdArgs = splits[1:]
+	}
+	// если есть пробел в параметре, то обернуть этот параметр обратно в кавычки
+	for i, arg := range cmdArgs {
+		cmdArgs[i] = strings.TrimSpace(arg)
+		if strings.Contains(arg, " ") {
+			cmdArgs[i] = fmt.Sprintf("\"%s\"", arg)
+		}
 	}
 
 	fmt.Printf("Trying to exec: %s...\n", cmd)
